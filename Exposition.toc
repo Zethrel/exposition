@@ -1,0 +1,17 @@
+## Interface: 120100
+## Title: Exposition
+## Notes: Write long roleplay posts in one window and send them as clean, whole-word chat messages with a readable pause between each.
+## Author: Zethrel
+## Version: 1.0.0
+## SavedVariables: ExpositionDB
+## Category-enUS: Roleplay
+## IconTexture: Interface\ICONS\INV_Scroll_11
+## AddonCompartmentFunc: Exposition_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: Exposition_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: Exposition_OnAddonCompartmentLeave
+
+Core\Splitter.lua
+Core\Config.lua
+Core\Sender.lua
+UI\MainFrame.lua
+Exposition.lua
