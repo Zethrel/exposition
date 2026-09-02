@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.1
+
+- Fixed: closing the window with Escape produced "Exposition has been blocked
+  from an action only available to the Blizzard UI". The window was registered
+  in `UISpecialFrames`, which Blizzard's secure escape handling reads, so an
+  addon writing to it taints `ToggleGameMenu` and the client blocks the next
+  protected call. Escape is now handled on the window itself, which touches
+  nothing secure. Other keys are passed through, so keybinds still work while
+  the window is open, and the window stops listening for keys entirely while a
+  text field has focus.
+
 ## 1.0.0
 
 First release.

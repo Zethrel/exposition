@@ -2,7 +2,7 @@
 ## Title: Exposition
 ## Notes: Write long roleplay posts in one window and send them as clean, whole-word chat messages with a readable pause between each.
 ## Author: Zethrel
-## Version: 1.0.0
+## Version: 1.0.1
 ## X-License: All Rights Reserved
 ## SavedVariables: ExpositionDB
 ## Category-enUS: Roleplay

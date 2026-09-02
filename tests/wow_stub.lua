@@ -20,6 +20,7 @@ local WIDGET_METHODS = {
 	SetMovable = true, SetResizable = true, SetResizeBounds = true, SetUserPlaced = true,
 	EnableMouse = true, EnableMouseWheel = true, EnableKeyboard = true,
 	RegisterForDrag = true, StartMoving = true, StopMovingOrSizing = true, StartSizing = true,
+	SetPropagateKeyboardInput = true,
 	SetScript = true, GetScript = true, HookScript = true,
 	RegisterEvent = true, UnregisterEvent = true, UnregisterAllEvents = true,
 	CreateFontString = true, CreateTexture = true, SetHitRectInsets = true,
@@ -118,6 +119,12 @@ end
 function widgetAPI:SetScrollChild(child) self.__scrollChild = child end
 function widgetAPI:GetScrollChild() return self.__scrollChild end
 
+-- Tracked rather than ignored so tests can assert that the window captures the
+-- keyboard only while it is open, and consumes Escape without swallowing
+-- anything else.
+function widgetAPI:EnableKeyboard(value) self.__keyboard = value and true or false end
+function widgetAPI:SetPropagateKeyboardInput(value) self.__propagate = value and true or false end
+
 function widgetAPI:SetChecked(value) self.__checked = value and true or false end
 function widgetAPI:GetChecked() return self.__checked and true or false end
 
@@ -125,6 +132,20 @@ function widgetAPI:Enable() self.__enabled = true end
 function widgetAPI:Disable() self.__enabled = false end
 function widgetAPI:IsEnabled() return self.__enabled ~= false end
 function widgetAPI:Click() fireScript(self, "OnClick", "LeftButton") end
+
+function widgetAPI:SetFocus()
+	if not self.__focused then
+		self.__focused = true
+		fireScript(self, "OnEditFocusGained")
+	end
+end
+function widgetAPI:ClearFocus()
+	if self.__focused then
+		self.__focused = false
+		fireScript(self, "OnEditFocusLost")
+	end
+end
+function widgetAPI:HasFocus() return self.__focused and true or false end
 
 function widgetAPI:GetFontString()
 	if not self.__fontString then self.__fontString = stub.CreateWidget("FontString", nil, self) end
@@ -254,6 +275,13 @@ function stub.Install()
 	end
 
 	return stub
+end
+
+--- Invokes one of a widget's script handlers, the way the client would.
+function stub.FireScript(widget, name, ...)
+	local handler = widget.__scripts[name]
+	assert(handler, "no " .. name .. " handler on this widget")
+	return handler(widget, ...)
 end
 
 --- Fires an event at every frame registered for it.

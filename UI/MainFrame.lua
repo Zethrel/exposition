@@ -139,6 +139,18 @@ local function AttachScrollIndicator(box, scroll)
 	return Update
 end
 
+-- While a text field has focus it must receive every keystroke, so the window
+-- stops listening for keys until that focus is released. Without this the
+-- frame's own key handling and the edit box would be competing for input.
+local function GuardKeyboardFocus(editBox, frame)
+	editBox:HookScript("OnEditFocusGained", function()
+		frame:EnableKeyboard(false)
+	end)
+	editBox:HookScript("OnEditFocusLost", function()
+		if frame:IsShown() then frame:EnableKeyboard(true) end
+	end)
+end
+
 local function CreateScrollArea(parent)
 	local box = CreateBox(parent)
 	local scroll = CreateFrame("ScrollFrame", nil, box)
@@ -195,7 +207,25 @@ function UI:Create()
 		frame:SetPoint("CENTER")
 	end
 
-	tinsert(UISpecialFrames, "ExpositionFrame")
+	-- Escape closes the window.
+	--
+	-- Not through UISpecialFrames: that table is read by Blizzard's secure
+	-- escape handling, so an addon writing to it taints ToggleGameMenu and the
+	-- client answers the next protected call with "Exposition has been blocked
+	-- from an action only available to the Blizzard UI". Handling the key on
+	-- our own frame touches nothing secure.
+	--
+	-- Every other key is propagated, so keybinds keep working while the window
+	-- is open, and the keyboard is only captured while it is actually shown.
+	frame:EnableKeyboard(false)
+	frame:SetScript("OnKeyDown", function(self, key)
+		if key == "ESCAPE" then
+			self:SetPropagateKeyboardInput(false)
+			self:Hide()
+		else
+			self:SetPropagateKeyboardInput(true)
+		end
+	end)
 
 	local title = CreateLabel(frame, "Exposition", "GameFontNormalLarge")
 	title:SetPoint("TOP", frame, "TOP", 0, -14)
@@ -221,9 +251,13 @@ function UI:Create()
 	self:BuildComposer(frame)
 
 	frame:SetScript("OnSizeChanged", function() UI:Relayout() end)
-	frame:SetScript("OnShow", function()
+	frame:SetScript("OnShow", function(self)
+		self:EnableKeyboard(true)
 		UI:SyncWidgets()
 		UI:Refresh()
+	end)
+	frame:SetScript("OnHide", function(self)
+		self:EnableKeyboard(false)
 	end)
 
 	self:SyncWidgets()
@@ -282,6 +316,7 @@ function UI:BuildControls(frame)
 	end)
 	target:SetScript("OnEscapePressed", target.ClearFocus)
 	target:SetScript("OnEnterPressed", target.ClearFocus)
+	GuardKeyboardFocus(target, frame)
 	self.targetBox = target
 
 	local targetLabel = CreateLabel(controls, "", "GameFontHighlightSmall")
@@ -334,6 +369,7 @@ function UI:BuildControls(frame)
 	delayBox:SetScript("OnEscapePressed", delayBox.ClearFocus)
 	delayBox:SetScript("OnEnterPressed", delayBox.ClearFocus)
 	delayBox:SetScript("OnEditFocusLost", function(self) UI:CommitDelay(self:GetText()) end)
+	GuardKeyboardFocus(delayBox, frame)
 	self.delayBox = delayBox
 
 	local minus = CreateButton(controls, "-", 20, function() UI:NudgeDelay(-1) end)
@@ -473,6 +509,7 @@ function UI:BuildComposer(frame)
 		end
 	end)
 	scroll:SetScrollChild(editBox)
+	GuardKeyboardFocus(editBox, frame)
 	self.editBox = editBox
 
 	-- Clicking anywhere in the panel starts typing.

@@ -423,6 +423,69 @@ test("a tiny saved window size is corrected on load", function()
 	check(ns.UI.frame:GetHeight() >= 560, "height raised to the minimum")
 end)
 
+test("escape closes the window without touching Blizzard's secure escape list", function()
+	local ns = fresh()
+	local frame = ns.UI.frame
+
+	-- The regression: adding the window to UISpecialFrames taints Blizzard's
+	-- secure escape handling, and the client answers with "blocked from an
+	-- action only available to the Blizzard UI".
+	for _, name in ipairs(_G.UISpecialFrames) do
+		check(name ~= "ExpositionFrame", "the window must not be in UISpecialFrames")
+	end
+	eq(#_G.UISpecialFrames, 0, "nothing was added to the secure escape list")
+
+	ns.UI.editBox:ClearFocus()
+	check(frame:IsShown(), "window open")
+	stub.FireScript(frame, "OnKeyDown", "ESCAPE")
+	check(not frame:IsShown(), "escape closed the window")
+	eq(frame.__propagate, false, "escape was consumed, so the game menu does not also open")
+end)
+
+test("other keys still reach the rest of the interface", function()
+	local ns = fresh()
+	local frame = ns.UI.frame
+	ns.UI.editBox:ClearFocus()
+	for _, key in ipairs({ "W", "1", "TAB", "SPACE" }) do
+		stub.FireScript(frame, "OnKeyDown", key)
+		eq(frame.__propagate, true, key .. " was propagated")
+		check(frame:IsShown(), key .. " did not close the window")
+	end
+end)
+
+test("typing is never intercepted by the window's key handling", function()
+	local ns = fresh()
+	local frame = ns.UI.frame
+
+	-- Opening focuses the composer, so the window must not be listening for
+	-- keys: every keystroke belongs to the edit box.
+	check(ns.UI.editBox:HasFocus(), "composer focused on open")
+	eq(frame.__keyboard, false, "window released the keyboard while typing")
+
+	ns.UI.editBox:ClearFocus()
+	eq(frame.__keyboard, true, "window listens again once typing stops")
+
+	-- The same has to hold for the smaller fields.
+	for _, box in ipairs({ ns.UI.targetBox, ns.UI.delayBox }) do
+		box:SetFocus()
+		eq(frame.__keyboard, false, "keyboard released while a field has focus")
+		box:ClearFocus()
+		eq(frame.__keyboard, true, "keyboard reclaimed after the field")
+	end
+end)
+
+test("the keyboard is only captured while the window is open", function()
+	local ns = fresh()
+	local frame = ns.UI.frame
+	ns.UI.editBox:ClearFocus()
+	eq(frame.__keyboard, true, "captured while open")
+	_G.SlashCmdList["EXPOSITION"]("")
+	eq(frame.__keyboard, false, "released when closed")
+	_G.SlashCmdList["EXPOSITION"]("")
+	ns.UI.editBox:ClearFocus()
+	eq(frame.__keyboard, true, "captured again when reopened")
+end)
+
 --------------------------------------------------------------------------------
 
 print("Exposition integration tests")
