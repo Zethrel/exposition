@@ -148,15 +148,18 @@ loads must be present, and the licence must be included. Tests and build
 scripts are not packaged.
 
 To cut a release, bump `## Version:` in `Exposition.toc`, add a `CHANGELOG.md`
-entry, commit, then push a matching tag:
+entry and commit. Then either push a matching tag:
 
 ```sh
 git tag v1.0.1 && git push origin v1.0.1
 ```
 
-`.github/workflows/release.yml` runs the tests, builds the package, and
-publishes a GitHub release with the zip attached. The build fails if the tag
-and the `.toc` version disagree.
+or run the **Release** workflow from the Actions tab with the version number,
+and it will create the tag itself.
+
+Either way `.github/workflows/release.yml` runs the tests, builds the package,
+and publishes a GitHub release with the zip attached. It fails if the version
+and the `.toc` disagree.
 
 ## Known limitations
 

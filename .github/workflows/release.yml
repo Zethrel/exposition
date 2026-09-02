@@ -1,13 +1,21 @@
 name: Release
 
-# Publishes a packaged addon zip whenever a version tag is pushed. GitHub's own
-# "Source code" archives unpack as exposition-<tag>/, which the game will not
-# load, so the attached asset is built by build.sh instead.
+# Publishes a packaged addon zip. GitHub's own "Source code" archives unpack as
+# exposition-<tag>/, which the game will not load, so the attached asset is
+# built by build.sh instead.
+#
+# Either push a version tag, or run this workflow manually with a version and
+# it will create the tag for you.
 
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, e.g. 1.0.0. Must match Exposition.toc."
+        required: true
 
 permissions:
   contents: write
@@ -18,6 +26,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Work out the version
+        id: version
+        env:
+          # Passed through the environment rather than interpolated into the
+          # script, so the input cannot inject shell.
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="${INPUT_VERSION#v}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          case "$VERSION" in
+            [0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "release: '$VERSION' is not a x.y.z version" >&2; exit 1 ;;
+          esac
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Install Lua 5.1
         run: |
           sudo apt-get update
@@ -26,17 +53,17 @@ jobs:
       - name: Run the test suites
         run: ./run-tests.sh
 
-      # build.sh fails if the tag and the .toc disagree, so a release can never
-      # ship a version the game would report differently.
+      # build.sh fails if the version and the .toc disagree, so a release can
+      # never ship a version the game would report differently.
       - name: Build the addon package
-        run: ./build.sh "${GITHUB_REF_NAME#v}"
+        run: ./build.sh "${{ steps.version.outputs.version }}"
 
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
-          TAG="$GITHUB_REF_NAME"
-          VERSION="${TAG#v}"
           cat > release-notes.md <<EOF
           ## Installing
 
@@ -52,6 +79,8 @@ jobs:
           See [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/CHANGELOG.md)
           for what changed.
           EOF
+          # gh creates the tag at this commit when it does not already exist.
           gh release create "$TAG" "dist/Exposition-$VERSION.zip" \
+            --target "$GITHUB_SHA" \
             --title "Exposition $VERSION" \
             --notes-file release-notes.md
