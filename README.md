@@ -20,14 +20,23 @@ message instead.
 
 ## Installing
 
-Copy the repository into your addons folder so the path looks like:
+Download **`Exposition-x.y.z.zip`** from the
+[latest release](https://github.com/Zethrel/exposition/releases/latest) and unzip
+it into your addons folder, so the path ends up looking like:
 
 ```
 World of Warcraft/_retail_/Interface/AddOns/Exposition/Exposition.toc
 ```
 
-The folder name must be `Exposition`, matching the `.toc`. Then `/reload` or
-restart the client.
+Then restart the client or `/reload`.
+
+> Do not use the **Source code** archives GitHub attaches to a release
+> automatically. They unpack as `exposition-v1.0.0/`, and the game will not load
+> an addon whose folder name does not match its `.toc`. The release zip unpacks
+> as `Exposition/` already.
+
+Cloning the repository works too, as long as the folder you clone into is named
+`Exposition`.
 
 ## Using it
 
@@ -126,6 +135,28 @@ Needs `lua5.1`, the same interpreter the game ships (`apt install lua5.1`).
 
 The stub whitelists widget methods, so calling something that is not real WoW
 API fails the test rather than silently doing nothing.
+
+## Releasing
+
+```sh
+./build.sh
+```
+
+Writes `dist/Exposition-<version>.zip`, then checks the archive it just made:
+every path must sit under a single `Exposition/` folder, every file the `.toc`
+loads must be present, and the licence must be included. Tests and build
+scripts are not packaged.
+
+To cut a release, bump `## Version:` in `Exposition.toc`, add a `CHANGELOG.md`
+entry, commit, then push a matching tag:
+
+```sh
+git tag v1.0.1 && git push origin v1.0.1
+```
+
+`.github/workflows/release.yml` runs the tests, builds the package, and
+publishes a GitHub release with the zip attached. The build fails if the tag
+and the `.toc` version disagree.
 
 ## Known limitations
 

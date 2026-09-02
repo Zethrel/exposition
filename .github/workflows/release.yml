@@ -1,0 +1,57 @@
+name: Release
+
+# Publishes a packaged addon zip whenever a version tag is pushed. GitHub's own
+# "Source code" archives unpack as exposition-<tag>/, which the game will not
+# load, so the attached asset is built by build.sh instead.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua 5.1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1
+
+      - name: Run the test suites
+        run: ./run-tests.sh
+
+      # build.sh fails if the tag and the .toc disagree, so a release can never
+      # ship a version the game would report differently.
+      - name: Build the addon package
+        run: ./build.sh "${GITHUB_REF_NAME#v}"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="$GITHUB_REF_NAME"
+          VERSION="${TAG#v}"
+          cat > release-notes.md <<EOF
+          ## Installing
+
+          1. Download **\`Exposition-$VERSION.zip\`** from the assets below.
+          2. Unzip it into \`World of Warcraft/_retail_/Interface/AddOns/\`.
+          3. It unpacks as a folder named \`Exposition\`, which is the name the
+             game requires. Do not rename it.
+          4. Restart the client or run \`/reload\`, then \`/expo\`.
+
+          > The **Source code** archives GitHub attaches automatically unpack as
+          > \`exposition-$TAG/\` and the game will not load them. Use the zip above.
+
+          See [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/CHANGELOG.md)
+          for what changed.
+          EOF
+          gh release create "$TAG" "dist/Exposition-$VERSION.zip" \
+            --title "Exposition $VERSION" \
+            --notes-file release-notes.md
