@@ -1,4 +1,5 @@
 -- Exposition test suite.
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 --
 --   lua5.1 tests/run.lua
 --

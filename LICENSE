@@ -1,0 +1,63 @@
+Exposition
+
+Copyright (c) 2026 Zethrel. All rights reserved.
+
+This repository is public so that the code can be read, reviewed and
+discussed. Publishing it here does not make it open source, and no licence
+is granted by its publication.
+
+
+WHAT YOU MAY DO
+
+  1. Read this source code.
+
+  2. Install and use Exposition in your own World of Warcraft client, for
+     your own personal, non-commercial play, as an unmodified copy obtained
+     from the copyright holder or from a distribution channel the copyright
+     holder has published it through.
+
+  3. Fork this repository within GitHub, to the extent that GitHub's Terms
+     of Service grant that ability to users of public repositories.
+
+  4. Submit contributions back to this repository. By submitting a
+     contribution you agree that it may be used in this project without
+     further conditions or compensation.
+
+
+WHAT YOU MAY NOT DO
+
+Without prior written permission from the copyright holder, you may not:
+
+  1. Copy, adapt or reuse this code, or any part of it, in another project,
+     addon, or work, whether or not that work is free, and whether or not
+     this code is credited.
+
+  2. Modify this software, or create derivative works from it, other than
+     private changes to your own installed copy that you do not distribute.
+
+  3. Redistribute this software, in source or packaged form, in whole or in
+     part, through any addon manager, package repository, mirror, website,
+     file host or other channel.
+
+  4. Sell this software, or include it in anything sold, or place it behind
+     a paywall, subscription or advertisement gate.
+
+  5. Remove or alter this notice or any copyright notice in the source
+     files.
+
+Permission for anything not listed under WHAT YOU MAY DO may be requested by
+opening an issue on this repository.
+
+
+NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+World of Warcraft is a trademark of Blizzard Entertainment, Inc. This
+project is not affiliated with or endorsed by Blizzard Entertainment.

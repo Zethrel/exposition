@@ -1,4 +1,5 @@
 -- Exposition - UI/MainFrame.lua
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 --
 -- The composer window: type on the left, watch exactly what will hit chat on
 -- the right of the cut, then send.

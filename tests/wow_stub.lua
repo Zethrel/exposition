@@ -1,4 +1,5 @@
 -- A small stand-in for the pieces of the WoW client Exposition touches, so the
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 -- addon can be loaded and driven outside the game.
 --
 -- Widget methods are whitelisted rather than blindly accepted: calling a method

@@ -1,4 +1,5 @@
 -- Exposition - Core/Config.lua
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 --
 -- Saved settings, defaults, and the tables that describe the choices offered
 -- in the UI.

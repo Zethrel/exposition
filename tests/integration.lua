@@ -1,4 +1,5 @@
 -- Exposition integration tests.
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 --
 --   lua5.1 tests/integration.lua
 --

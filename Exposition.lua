@@ -1,4 +1,5 @@
 -- Exposition - Exposition.lua
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 --
 -- Entry point: saved variables, slash commands, and the addon compartment
 -- button.

@@ -1,4 +1,5 @@
 -- Exposition - Core/Splitter.lua
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 --
 -- The chunking engine. Pure Lua: it touches no WoW API so it can be unit
 -- tested outside the game (see tests/). Everything is byte oriented because

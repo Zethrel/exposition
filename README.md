@@ -137,6 +137,20 @@ API fails the test rather than silently doing nothing.
   the options and dropdown APIs Blizzard has rewritten several times, so it
   should survive patches with less maintenance.
 
+## Licence
+
+Copyright (c) 2026 Zethrel. **All rights reserved.** See [LICENSE](LICENSE).
+
+This repository is public so the code can be read and reviewed. It is not open
+source. You are welcome to install and play with Exposition, and to read how it
+works — but the code may not be copied into other projects, redistributed, or
+republished in modified form without permission. Ask in an issue if you want to
+do something the licence does not cover.
+
+Exposition contains no third-party code: no Ace3, no LibStub, no embedded
+libraries. Everything here is original, so there are no upstream licence terms
+layered on top of the above.
+
 ## Layout
 
 ```

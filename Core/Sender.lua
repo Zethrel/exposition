@@ -1,4 +1,5 @@
 -- Exposition - Core/Sender.lua
+-- Copyright (c) 2026 Zethrel. All rights reserved. See LICENSE.
 --
 -- Owns the outgoing queue: one chat message now, the rest on a timer.
 
